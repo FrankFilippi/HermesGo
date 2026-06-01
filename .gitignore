@@ -1,0 +1,23 @@
+# Build scratch + output
+build/.work/
+build/.stage/
+dist/
+
+# Vendored front-end libs are fetched at build time (see web/vendor/README.md)
+hermes_webui/web/vendor/xterm.js
+hermes_webui/web/vendor/xterm.css
+hermes_webui/web/vendor/xterm-addon-fit.js
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.venv-test/
+*.egg-info/
+
+# PyInstaller
+build/pyinstaller/build/
+*.spec.bak
+
+# OS
+.DS_Store

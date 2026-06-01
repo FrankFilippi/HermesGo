@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hermes</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/vendor/xterm.css" />
+  </head>
+  <body>
+    <div id="app">
+      <nav id="sidebar">
+        <div class="brand">
+          <span class="logo">⬡</span>
+          <span class="brand-name">Hermes</span>
+        </div>
+        <button class="nav-item active" data-view="chat" title="Hermes chat &amp; dashboard">
+          <span class="ico">💬</span><span class="label">Chat</span>
+        </button>
+        <button class="nav-item" data-view="terminal" title="PowerShell / cmd terminal">
+          <span class="ico">▮</span><span class="label">Terminal</span>
+        </button>
+        <button class="nav-item" data-view="files" title="Workspace file drawer">
+          <span class="ico">🗂</span><span class="label">Files</span>
+        </button>
+        <button class="nav-item" data-view="skills" title="Bundled skills">
+          <span class="ico">✦</span><span class="label">Skills</span>
+        </button>
+        <div class="spacer"></div>
+        <button id="skill-market" class="nav-item market" title="Open the skill market">
+          <span class="ico">🛒</span><span class="label">Skill Market</span>
+        </button>
+        <button id="open-logs" class="nav-item" title="Show the logs folder path">
+          <span class="ico">🧾</span><span class="label">Logs</span>
+        </button>
+      </nav>
+
+      <main id="content">
+        <!-- Chat / dashboard -->
+        <section class="view active" id="view-chat">
+          <iframe id="dashboard-frame" title="Hermes dashboard"></iframe>
+        </section>
+
+        <!-- Terminal -->
+        <section class="view" id="view-terminal">
+          <div class="view-header">
+            <span id="term-title">Terminal</span>
+            <span class="muted" id="term-status">disconnected</span>
+          </div>
+          <div id="terminal"></div>
+        </section>
+
+        <!-- Files -->
+        <section class="view" id="view-files">
+          <div class="view-header">
+            <button id="files-up" class="mini-btn">⬆ Up</button>
+            <span id="files-path" class="path muted"></span>
+          </div>
+          <div class="files-split">
+            <ul id="file-list"></ul>
+            <pre id="file-preview" class="muted">Select a file to preview.</pre>
+          </div>
+        </section>
+
+        <!-- Skills -->
+        <section class="view" id="view-skills">
+          <div class="view-header">
+            <span>Bundled skills</span>
+            <span class="muted" id="skills-dir"></span>
+          </div>
+          <div id="skills-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/vendor/xterm.js"></script>
+    <script src="/static/vendor/xterm-addon-fit.js"></script>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

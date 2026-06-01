@@ -1,0 +1,38 @@
+[project]
+name = "hermes-webui"
+version = "0.1.0"
+description = "Native Windows desktop shell for the Hermes Agent (WebView2 + local UI)."
+requires-python = ">=3.11"
+dependencies = [
+    # Web shell server
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "httpx>=0.27",
+    "websockets>=12.0",
+    "python-multipart>=0.0.9",
+    # Native window (WebView2 via EdgeChromium backend) — Windows only at runtime.
+    "pywebview>=5.1; sys_platform == 'win32'",
+    "pythonnet>=3.0; sys_platform == 'win32'",
+    # Built-in terminal pseudo-console — Windows only.
+    "pywinpty>=2.0; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+# Installed by the build to freeze HermesWebUI.exe.
+build = ["pyinstaller>=6.6"]
+# Lets the shell run on the macOS/Linux dev box (no pywebview/pywinpty needed there
+# beyond what ships in stdlib); kept minimal on purpose.
+dev = []
+
+[project.scripts]
+hermes-webui = "hermes_webui.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["hermes_webui"]
+
+[tool.setuptools.package-data]
+hermes_webui = ["web/**/*"]

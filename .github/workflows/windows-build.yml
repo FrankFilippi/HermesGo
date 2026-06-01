@@ -1,0 +1,50 @@
+# Builds the HermesGo installer on Windows and uploads it as an artifact.
+#
+# Manual-trigger only (workflow_dispatch). The build downloads large external
+# runtimes (Node, Git, the WebView2 fixed runtime, Hermes deps) whose URLs can
+# rotate, so it is intentionally NOT run on every push — kick it off from the
+# Actions tab when you want a fresh installer.
+
+name: Windows installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      clean:
+        description: "Clean build (ignore caches)"
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: irm https://astral.sh/uv/install.ps1 | iex
+        shell: pwsh
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+        shell: pwsh
+
+      - name: Build installer
+        run: |
+          $clean = "${{ inputs.clean }}" -eq "true"
+          if ($clean) { pwsh -File build\build.ps1 -Clean }
+          else        { pwsh -File build\build.ps1 }
+        shell: pwsh
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: HermesGo-Setup
+          path: dist/HermesGo-Setup-*.exe
+          if-no-files-found: error

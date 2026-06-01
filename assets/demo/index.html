@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HermesGo — UI preview</title>
+<!--
+  Self-contained PREVIEW of the HermesGo desktop shell. It reuses the real
+  layout + color scheme from hermes_webui/web/styles.css but fills each view with
+  representative mock content so the UI can be screenshotted without a Windows
+  build / running Hermes backend. Used only to generate the README screenshots.
+-->
+<style>
+:root{--bg:#0b0d12;--panel:#11131a;--panel-2:#161922;--border:#232838;--text:#e6e8ee;--muted:#8b93a7;--accent:#7c5cff;--accent-2:#00d8a0;--danger:#ff7b72;--user:#1d2230}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:radial-gradient(1200px 700px at 50% -8%,#15182400,#15182400),linear-gradient(135deg,#0a0c14 0%,#0e1322 55%,#120e22 100%);color:var(--text);font-family:"Segoe UI",Inter,system-ui,Arial,sans-serif;font-size:14px}
+/* fake window chrome to make screenshots look like a real desktop app */
+.window{width:1180px;height:760px;margin:28px auto;border-radius:12px;overflow:hidden;border:1px solid #2a3042;box-shadow:0 24px 80px rgba(0,0,0,.6);display:flex;flex-direction:column}
+.titlebar{height:38px;background:#0d0f16;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 14px;flex-shrink:0}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.titlebar .ttl{margin-left:10px;color:var(--muted);font-size:12.5px;letter-spacing:.3px}
+#app{display:flex;flex:1;min-height:0}
+#sidebar{width:74px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:10px 8px;gap:4px}
+.brand{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 14px}
+.brand .logo{font-size:22px;color:var(--accent)}.brand .brand-name{font-size:11px;color:var(--muted);letter-spacing:.5px}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:1px solid transparent;color:var(--muted);border-radius:10px;padding:9px 4px;cursor:pointer}
+.nav-item .ico{font-size:18px;line-height:1}.nav-item .label{font-size:10.5px}
+.nav-item.active{background:var(--panel-2);color:var(--text);border-color:var(--border)}
+.nav-item.market{color:var(--accent-2)}.spacer{flex:1}
+#content{flex:1;position:relative;background:var(--bg)}
+.view{position:absolute;inset:0;display:none;flex-direction:column}.view.active{display:flex}
+.view-header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--panel);font-weight:600}
+.muted{color:var(--muted);font-weight:400;font-size:12px}
+/* chat */
+.chat{flex:1;overflow:auto;padding:22px 26px;display:flex;flex-direction:column;gap:16px}
+.msg{max-width:78%;padding:12px 15px;border-radius:14px;line-height:1.5}
+.msg.user{align-self:flex-end;background:var(--user);border:1px solid var(--border)}
+.msg.bot{align-self:flex-start;background:var(--panel);border:1px solid var(--border)}
+.msg .who{font-size:11px;color:var(--muted);margin-bottom:5px}
+.msg code{background:#0b0d12;padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.composer{border-top:1px solid var(--border);padding:14px 18px;display:flex;gap:10px;background:var(--panel)}
+.composer .box{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--muted)}
+.composer .send{background:var(--accent);border:0;color:#fff;border-radius:10px;padding:0 18px;font-weight:600;cursor:pointer}
+/* terminal */
+.term{flex:1;background:#0b0d12;padding:16px 18px;font-family:ui-monospace,Consolas,"Cascadia Mono",monospace;font-size:13px;line-height:1.55;overflow:auto;white-space:pre-wrap}
+.term .p{color:var(--accent-2)}.term .path{color:#5aa9ff}.term .ok{color:#56d364}.term .dim{color:var(--muted)}.term .cur{background:var(--accent);color:var(--accent)}
+.pill{margin-left:auto;font-size:11px;color:var(--accent-2);border:1px solid #1c5c4a;background:#0e2a23;border-radius:20px;padding:2px 10px}
+/* files */
+.files-split{flex:1;display:flex;min-height:0}
+#file-list{width:300px;margin:0;padding:6px;list-style:none;overflow:auto;border-right:1px solid var(--border)}
+#file-list li{padding:7px 10px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+#file-list li.sel{background:var(--panel-2)}
+#file-list li .fsize{color:var(--muted);font-size:11px;flex-shrink:0}
+.fp{flex:1;margin:0;padding:16px 18px;overflow:auto;white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.55}
+.mini-btn{background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:4px 10px;cursor:pointer}
+.path{font-family:ui-monospace,Consolas,monospace}
+/* skills */
+#skills-grid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;padding:16px;align-content:start}
+.skill-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px}
+.skill-card h3{margin:0 0 6px;font-size:14px}.skill-card .tag{font-size:10px;color:var(--accent);border:1px solid #2e2a55;border-radius:20px;padding:1px 8px;float:right}
+.skill-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.kw{color:#ff7b72}.str{color:#a5d6a7}.cm{color:var(--muted)}.fn{color:#82aaff}
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="ttl">⬡ Hermes</span></div>
+  <div id="app">
+    <nav id="sidebar">
+      <div class="brand"><span class="logo">⬡</span><span class="brand-name">Hermes</span></div>
+      <button class="nav-item active" data-view="chat"><span class="ico">💬</span><span class="label">Chat</span></button>
+      <button class="nav-item" data-view="terminal"><span class="ico">▮</span><span class="label">Terminal</span></button>
+      <button class="nav-item" data-view="files"><span class="ico">🗂</span><span class="label">Files</span></button>
+      <button class="nav-item" data-view="skills"><span class="ico">✦</span><span class="label">Skills</span></button>
+      <div class="spacer"></div>
+      <button class="nav-item market"><span class="ico">🛒</span><span class="label">Market</span></button>
+      <button class="nav-item"><span class="ico">🧾</span><span class="label">Logs</span></button>
+    </nav>
+    <main id="content">
+      <!-- CHAT -->
+      <section class="view active" id="view-chat">
+        <div class="view-header">Chat <span class="muted">Hermes dashboard · 127.0.0.1:9119</span></div>
+        <div class="chat">
+          <div class="msg user"><div class="who">You</div>Summarize the build flow for this project and tell me where the logs live.</div>
+          <div class="msg bot"><div class="who">⬡ Hermes</div>The Windows installer is built in four PowerShell stages — fetch runtimes, provision Hermes, freeze <code>HermesWebUI.exe</code>, then compile with Inno Setup. Logs are written under <code>%LOCALAPPDATA%\hermes\logs\hermeswebui\</code> (both <code>hermeswebui.log</code> and the captured <code>dashboard.log</code>).<br><br>Want me to open the logs folder or run the build now?</div>
+          <div class="msg user"><div class="who">You</div>Create a skill that watches a folder and transcribes new audio files.</div>
+          <div class="msg bot"><div class="who">⬡ Hermes</div>Drafting a new skill <code>audio-watch</code> and saving it to your skills directory… ✦ I'll reuse <code>ffmpeg</code> (already bundled) for decoding.</div>
+        </div>
+        <div class="composer"><div class="box">Message Hermes…</div><button class="send">Send</button></div>
+      </section>
+      <!-- TERMINAL -->
+      <section class="view" id="view-terminal">
+        <div class="view-header">Terminal <span class="muted">PowerShell · ConPTY</span><span class="pill">● connected</span></div>
+<div class="term"><span class="path">PS C:\Users\frank\projects\HermesGo></span> <span class="p">git status</span>
+<span class="dim">On branch main</span>
+<span class="ok">nothing to commit, working tree clean</span>
+
+<span class="path">PS C:\Users\frank\projects\HermesGo></span> <span class="p">python -m hermes_webui --version</span>
+HermesGo 0.1.0  <span class="dim">(shell :9200 · dashboard :9119)</span>
+
+<span class="path">PS C:\Users\frank\projects\HermesGo></span> <span class="cur">█</span>
+</div>
+      </section>
+      <!-- FILES -->
+      <section class="view" id="view-files">
+        <div class="view-header"><button class="mini-btn">⬆ Up</button><span class="path muted">C:\Users\frank\projects\HermesGo</span></div>
+        <div class="files-split">
+          <ul id="file-list">
+            <li>📁 build<span class="fsize"></span></li>
+            <li>📁 docs<span class="fsize"></span></li>
+            <li>📁 hermes_webui<span class="fsize"></span></li>
+            <li class="sel">📄 README.md<span class="fsize">6.1 KB</span></li>
+            <li>📄 LICENSE<span class="fsize">1.3 KB</span></li>
+            <li>📄 pyproject.toml<span class="fsize">1.0 KB</span></li>
+            <li>📄 VERSION<span class="fsize">6 B</span></li>
+          </ul>
+<pre class="fp"><span class="cm"># ⬡ HermesGo</span>
+
+The <span class="fn">Hermes Agent</span> as a one-click Windows desktop app.
+
+<span class="cm">## Features</span>
+- Native desktop window (WebView2)
+- Built-in PowerShell terminal (ConPTY)
+- Workspace file drawer
+- Bundled skills + Skill Market shortcut
+- Logs under %LOCALAPPDATA%\hermes\logs
+</pre>
+        </div>
+      </section>
+      <!-- SKILLS -->
+      <section class="view" id="view-skills">
+        <div class="view-header">Bundled skills <span class="muted">%LOCALAPPDATA%\hermes\skills</span></div>
+        <div id="skills-grid">
+          <div class="skill-card"><span class="tag">bundled</span><h3>web-search</h3><p>Search the web and summarize the top results with citations.</p></div>
+          <div class="skill-card"><span class="tag">bundled</span><h3>file-ops</h3><p>Read, write, move and search files in the workspace safely.</p></div>
+          <div class="skill-card"><span class="tag">bundled</span><h3>memory</h3><p>Persist facts across sessions and recall them when relevant.</p></div>
+          <div class="skill-card"><span class="tag">learned</span><h3>audio-watch</h3><p>Watch a folder and transcribe new audio files via ffmpeg.</p></div>
+          <div class="skill-card"><span class="tag">bundled</span><h3>screenshot</h3><p>Capture and annotate screenshots from the desktop.</p></div>
+          <div class="skill-card"><span class="tag">market</span><h3>+ Add from Skill Market</h3><p>Browse agentskills.io for community skills.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script>
+function activate(view){
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  const btn=document.querySelector('.nav-item[data-view="'+view+'"]');
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+view));
+}
+document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>activate(b.dataset.view)));
+// Allow #chat / #terminal / #files / #skills for headless screenshotting of each view.
+const h=(location.hash||'#chat').slice(1);
+if(['chat','terminal','files','skills'].includes(h)) activate(h);
+</script>
+</body>
+</html>

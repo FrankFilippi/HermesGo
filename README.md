@@ -14,6 +14,10 @@ native desktop window.
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Built on Hermes](https://img.shields.io/badge/built%20on-Hermes%20Agent-7c5cff)](https://github.com/NousResearch/hermes-agent)
 
+<br>
+
+<img src="docs/screenshots/chat.png" alt="HermesGo desktop window — chat" width="820">
+
 </div>
 
 ---
@@ -38,6 +42,22 @@ needs is bundled and started automatically.
 | 🛒 | **Skill Market shortcut** | Jump to [agentskills.io](https://agentskills.io) to add more |
 | 🧾 | **Diagnosable by design** | All logs under `%LOCALAPPDATA%\hermes\logs\hermeswebui\` |
 | 📦 | **Zero dependencies** | Portable Python 3.11, Node 22, Git, and a **fixed WebView2 runtime** are all bundled |
+
+## 🖼 Look inside
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/terminal.png" alt="Built-in PowerShell terminal"><br><sub><b>Terminal</b> — a real interactive PowerShell via ConPTY</sub></td>
+    <td width="50%"><img src="docs/screenshots/files.png" alt="Workspace file drawer"><br><sub><b>Files</b> — browse and preview the workspace</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/skills.png" alt="Skills view"><br><sub><b>Skills</b> — bundled & learned skills, plus the Skill Market</sub></td>
+    <td width="50%"><img src="docs/screenshots/chat.png" alt="Chat / Hermes dashboard"><br><sub><b>Chat</b> — the Hermes dashboard in a native window</sub></td>
+  </tr>
+</table>
+
+> <sub>UI preview rendered from the app's real layout & styles with sample data
+> (generated via <code>assets/demo/</code>). Final pixels depend on your Hermes version & theme.</sub>
 
 ## 📥 For users — install & run
 
